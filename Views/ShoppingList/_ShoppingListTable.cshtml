@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Item>
+
+@if (Model.Count() == 0)
+{
+    <p>No Items on this list</p>
+}
+else
+{
+    @foreach (var item in Model)
+    {
+        <div class="row m-2 border">
+            <input type="hidden" value=@item.Id />
+            <div class="col d-flex align-items-center border-right">@item.ItemName</div>
+            <div class="col d-flex align-items-center">@item.Unit</div>
+            <div class="col d-flex align-items-center">@item.UnitPrice</div>
+            <div class="col-2 d-flex justify-content-center align-items-center">
+                <button class="my-1 btn btn-outline-primary" onclick="RemoveItemFromList(this)" style="padding:0px" >
+                    <img src="../img/delete.svg" height="30" width="30" />
+                </button>                
+            </div>
+        </div>
+    }
+}
+

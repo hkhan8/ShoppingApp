@@ -1,0 +1,52 @@
+﻿@model IEnumerable<ShoppingApp.Models.Item>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Sams Shopping Cart</h1>
+
+<p>
+    <button onclick='CreateModal()' class="btn btn-success">Create new Product</button>
+</p>
+
+<div id="TableSpinner" class="row justify-content-center" style="height:10vh; display:none">
+    <div style="color: #9784ed" class="la-ball-circus la-3x">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div id="ItemTable">
+    <partial name="_ItemTable" />
+</div>
+
+<div class="modal fade" id="ItemsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalHeader"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-sm-8 p-3" id="ModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="SpinnerModal" tabindex="-1" role="dialog" data-backdrop="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered justify-content-center">
+       <div class="spinner-border text-sucess" style="height:20vh; width:20vh; font-size:6rem"></div>
+    </div>
+</div>
+
+

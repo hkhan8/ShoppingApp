@@ -1,0 +1,28 @@
+﻿@model ShoppingApp.Models.Item
+
+<dl class="row">
+    <dt class="col-sm-4">
+        @Html.DisplayNameFor(model => model.Id)
+    </dt>
+    <dd class="col-sm-8">
+        @Html.DisplayFor(model => model.Id)
+    </dd>
+    <dt class="col-sm-4">
+        @Html.DisplayNameFor(model => model.ItemName)
+    </dt>
+    <dd class="col-sm-8">
+        @Html.DisplayFor(model => model.ItemName)
+    </dd>
+    <dt class="col-sm-4">
+        @Html.DisplayNameFor(model => model.Unit)
+    </dt>
+    <dd class="col-sm-8">
+        @Html.DisplayFor(model => model.Unit)
+    </dd>
+    <dt class="col-sm-4">
+        @Html.DisplayNameFor(model => model.UnitPrice)
+    </dt>
+    <dd class="col-sm-8">
+        @Html.DisplayFor(model => model.UnitPrice)
+    </dd>
+</dl>

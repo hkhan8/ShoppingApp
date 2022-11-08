@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ShoppingApp.Models.Item>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Unit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Unit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    <button onclick="ConfirmDeleteItem(@item.Id)">Delete</button>
+                    <button onclick="EditModal(@item.Id)">Edit</button>
+                    <button onclick="DetailsModal(@item.Id)">Details</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
