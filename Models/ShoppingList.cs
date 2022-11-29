@@ -9,6 +9,7 @@ namespace ShoppingApp.Models
         public int ShoppingListId { get; set; }
         public string Name { get; set; }
         public int UserId { get; set; }
+        [DisplayName("Created On this Date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         // Navigation Properties

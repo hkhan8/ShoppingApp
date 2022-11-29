@@ -9,6 +9,8 @@ namespace ShoppingApp.Models
         public int ShoppingListId { get; set; }
         public int ItemId { get; set; }
 
+        public int Quantity { get; set; }
+
         // Navigation properties
 
         public Item Item { get; set; }

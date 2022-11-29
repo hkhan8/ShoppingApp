@@ -1,11 +1,16 @@
-﻿namespace ShoppingApp.Models
+﻿using System.ComponentModel;
+
+namespace ShoppingApp.Models
 {
     public class Item
     {
         public int Id { get; set; }
+        [DisplayName("Item Name")]
         public string ItemName { get; set; }
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
+        [DisplayName("Unit Price")]
         public double UnitPrice { get; set; }
+    
 
         public Item()
         {

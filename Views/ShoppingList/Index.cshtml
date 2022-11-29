@@ -1,16 +1,95 @@
-﻿
+﻿@{
+    var userId = @ViewData["UserId"];
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+
+<style>
+    .modelTextColor {
+        color: black;
+    }
+
+    .center-div {
+        width: 300px;
+        height: 300px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -150px;
+        margin-top: -150px;
+    }
+
+    .spinner {
+        position: fixed;
+        z-index: 999;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        background-color: Black;
+        filter: alpha(opacity=60);
+        opacity: 0.6;
+        -moz-opacity: 0.8;
+    }
+
+    .loader {
+        margin: auto;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #15a0ec;
+        border-bottom: 16px solid #15a0ec;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+
+    .inner-div {
+        background-color: white;
+        border-radius: 15px;
+        margin: auto;
+        padding: 2%;
+        width: 150px;
+    }
+
+    @@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
 <div class="row d-flex justify-content-center">
     <h1>Shopping Lists</h1>
 </div>
 
-@*
-<div class="row">
-    <input type ="datetime-local" />
-</div>*@
+<a class="nav-link text-info" asp-area="" asp-controller="ShoppingList" asp-action="ShoppingList">Go To Shopping List View</a>
+<div class="spinner" style="display:none">
+    <div class="center-div">
+        <div class="inner-div">
+            <div class="loader"></div>
+        </div>
+    </div>
+</div>
 
 <div class="row m-3 border rounded shadow">
     <div class="col-sm-2 d-flex justify-content-center align-items-center my-1">
-        <input type="button" class="btn btn-primary text-light" onclick="ShowEditListModal()" value="Edit"/>
+        <input type="button" class="btn btn-primary text-light" onclick="ShowEditListModal()" value="Edit" />
     </div>
     <div class="col-sm-8 my-1" id="ShoppingListDDLContainer">
         <select class="w-100 h-100" disabled="disabled">
@@ -23,27 +102,31 @@
 </div>
 
 <div class="row m-3 border rounded shadow" id="ShoppingListTable" style="display:none">
-
 </div>
 
-
 <div class="modal fade" id="AddListModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modelTextColor">
                 <h5 class="modal-title" id="ModalHeader">Add New Shopping List</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" onclick="CloseModelPopUp('AddListModal')" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-content">
-                <div class="row d-flex justify-content-center">
-                    <form id="addListForm">
+            <form id="addListForm">
+                <div class="modal-body">
+                    <div class="row d-flex justify-content-center">
+
                         <input type="text" name="listName" placeholder="Name" />
-                        <input type="submit" value="Add" />
-                    </form>
+
+
+                    </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Add" />
+
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -51,26 +134,25 @@
 <div class="modal fade" id="EditListModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header modelTextColor">
                 <h5 class="modal-title" id="ModalHeader">Edit Shopping List</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" onclick="CloseModelPopUp('EditListModal')" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-content">
+            <div class="modal-content modelTextColor">
                 <div class="row d-flex justify-content-center">
 
                     <div class="col-12">
 
                         <div class="row d-flex justify-content-center mx-2 mt-2 p-1">
                             <div class="col-10">
-                                <input type="text" id="searchText" placeholder="Search" style="width:100%;"/>
+                                <input type="text" id="searchText" placeholder="Search" style="width:100%;" />
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-12" id="unAddedItems">
-
                             </div>
                         </div>
 
@@ -85,13 +167,18 @@
 @section Scripts{
 
     <script>
-        window.onload = async function () {
+
+        window.onload = async function() {
             // Load the Drop Down List
             UpdateDDL();
         }
-
+        
+        /**
+         * function to update the drop-down list
+         */
         async function UpdateDDL() {
-            var result = await fetch("/ShoppingList/ShoppingListDDLPartial?userID=1");
+            //user is retrieved from the ShoppingList controller ViewData
+            var result = await fetch("/ShoppingList/ShoppingListDDLPartial?userID=" + @userId);
             var html = await result.text();
             document.getElementById("ShoppingListDDLContainer").innerHTML = html;
 
@@ -99,24 +186,28 @@
             ddl.addEventListener("change", handleDDLChange);
         }
 
+        /**
+         * closes the model popup
+         */
+        async function CloseModelPopUp(id) {
+            $('#' + id).modal('hide');
+        }
+
         async function handleDDLChange(e) {
 
             var option = e.target.selectedOptions[0];
-
+            //calling function to update list
             FetchAndUpdateMainItemList(option.value)
-
-            //var result = await fetch("/ShoppingList/ShoppingListTablePartial?shoppingListId=" + option.value);
-            //var html = await result.text();
-
-            //var tableRow = document.getElementById("ShoppingListTable");
-            //tableRow.innerHTML = html;
         }
 
+        /**
+         * method to update main item list using unique list id
+         */
         async function FetchAndUpdateMainItemList(listId) {
 
             var result = await fetch("/ShoppingList/ShoppingListTablePartial?shoppingListId=" + listId);
             var html = await result.text();
-
+            //retrieve elements of shopping list table
             var tableRow = document.getElementById("ShoppingListTable");
             tableRow.innerHTML = html;
             tableRow.style.display = "block";
@@ -124,33 +215,43 @@
 
         async function ShowAddListModal() {
             // find and show the Modal
-            $('#AddListModal').modal('show');
+            $('.spinner').css('display', 'block');
+            setTimeout(
+                function() {
+                    $('.spinner').css('display', 'none');
+                    $('#AddListModal').modal('show');
+                }, 2000);
+
 
             // add an event listener to the Modal's Form Submit event
             let addListForm = document.getElementById('addListForm');
             addListForm.addEventListener('submit', handleAddListFormSubmit);
         }
 
+        /**
+         * displays the edit list modal
+         */
         async function ShowEditListModal() {
 
             let ddlValue = document.getElementById('shoppingDDL').selectedOptions[0].value
-
+            //validation check
             if (ddlValue == 0) {
                 return;
             }
-
+            //calls function to display filtered items
             await FetchAndDisplayFilteredItems();
-            
+
             $('#EditListModal').modal('show');
 
             let searchInput = document.getElementById('searchText');
             searchInput.addEventListener('input', handleSearchInput);
-
-
         }
 
+        /**
+         * retrieves all filtered results based on search
+         */
         async function FetchAndDisplayFilteredItems(searchCriteria) {
-
+            //validation check on search
             if (searchCriteria == undefined) {
                 searchCriteria = '';
             }
@@ -158,15 +259,15 @@
             let listId = document.getElementById('shoppingDDL').selectedOptions[0].value
 
             let result = await fetch('/ShoppingList/GetNotAddedItemsForShoppingListPartial?listId=' + listId + '&searchCriteria=' + searchCriteria)
-
+            // retrieve the input fields' value
             let html = await result.text();
 
             document.getElementById('unAddedItems').innerHTML = html;
         }
-
+        
         async function handleSearchInput(e) {
             // get the value of the input field
-            let text = e.target.value;            
+            let text = e.target.value;
 
             await FetchAndDisplayFilteredItems(text);
 
@@ -177,44 +278,55 @@
             e.preventDefault();
             // retrieve the input fields' value
             let listName = e.target['listName'].value
-
+            var _userId = @userId != null ? @userId: 1;
             // Send this to server via a POST fetch request
-            let result = await fetch('/ShoppingList/AddNewShoppingList?userid=1', {
+            $('.spinner').css('display', 'block');
+            let result = await fetch('/ShoppingList/AddNewShoppingList?userid=' + _userId, {
                 method: 'POST',
                 headers: {
-                    'content-type':'application/json'
+                    'content-type': 'application/json'
                 },
                 body: JSON.stringify(listName)
             })
 
             console.log(result.status);
 
+            //validation for result
             if (result.ok) {
 
                 await UpdateDDL();
-
+                //if successfult, toaster appears with message
                 $('#AddListModal').modal('hide');
+                toastr.success("New List Created");
+                $('.spinner').css('display', 'none');
             } else {
+                //returns the bad request error in the toaster
+                $('.spinner').css('display', 'none');
                 let message = await result.text();
-                ShowToast(message, 3000);
+                toastr.error(message);
             }
         }
 
+        /**
+         * method to add items to list by button press
+         */
         async function AddItemToList(button) {
-        
-            console.log(button.id.split('-')[1]);   
-            
+
+            console.log(button.id.split('-')[1]);
+            //set the button disabled after single press
             button.setAttribute('disabled', 'disabled')
-            
+
             let itemId = button.id.split('-')[1]
             let listId = document.getElementById('shoppingDDL').selectedOptions[0].value
 
+            // retrieve the input fields' value
             let shoppingList = {
                 ItemId: itemId,
-                ShoppingListId: listId
+                ShoppingListId: listId,
+                Quantity: $("#txt-" + itemId)[0].value
             }
             console.log(shoppingList)
-
+            // Send this to server via a POST fetch request
             let result = await fetch('/ShoppingList/AddItemToShoppingList', {
                 method: 'POST',
                 headers: {
@@ -227,26 +339,41 @@
             if (searchInput.value == undefined) {
                 searchInput.value = ''
             }
+            //call function if search is entered
             await FetchAndDisplayFilteredItems(searchInput.value)
-
+            //call function to update item list
             await FetchAndUpdateMainItemList(listId)
+            //validation for result
+            if (result.ok) 
+            {
+                //if successful, toaster appears with the following text
+                toastr.success("Item Added");
+            } 
+            else 
+            {
+                //toaster will display error message from bad request in controller
+                let message = await result.text();
+                toastr.error(message);
+            }
         }
 
-    async function RemoveItemFromList(button) {
-        let row = button.parentNode.parentNode
-        let idInputField = row.children[0]
-        let itemId = idInputField.value
+        /**
+         * function to remove items from list using the id
+         */
+        async function RemoveItemFromList(id) {
+        let itemId = id;
 
         console.log(itemId)
-
+        // retrieve value
         let listID = document.getElementById('shoppingDDL').selectedOptions[0].value
 
+        //send to server via DELETE request
         await fetch('/ShoppingList/RemoveItemFromList?itemId=' + itemId + '&shoppingListId=' + listID, {
             method: 'DELETE'
         });
-
+        //function call to update list
         await FetchAndUpdateMainItemList(listID)
-    }
+    }
 
     </script>
 

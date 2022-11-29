@@ -8,8 +8,15 @@ namespace ShoppingApp.Controllers
 {
     public class ItemsController : Controller
     {
+        /// <summary>
+        /// The _context.
+        /// </summary>
         private readonly ShoppingListContext _context;
 
+        /// <summary>
+        /// ItemsController.
+        /// </summary>
+        /// <param name="context"></param>
         public ItemsController(ShoppingListContext context)
         {
             _context = context;
@@ -19,13 +26,21 @@ namespace ShoppingApp.Controllers
         /// Returns the Index Page (the table will be a partial view)
         /// </summary>
         /// <returns></returns>
+        /// 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewData["UserId"] = HttpContext.Session.GetString("appUserSession");
             return View(await GetItemData());
         }
 
+        /// <summary>
+        /// About page
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> About()
         {
+            ViewData["UserId"] = HttpContext.Session.GetString("appUserSession");
             return View();
         }
 
@@ -39,17 +54,31 @@ namespace ShoppingApp.Controllers
             return PartialView("_ItemTable", await GetItemData());
         }
 
+        /// <summary>
+        /// Get Create Item View.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> CreatePartial()
         {
             return PartialView("_CreateItem");
         }
 
+        /// <summary>
+        /// Edit Items.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
         public async Task<IActionResult> EditPartial(int id)
         {
             var item = await _context.Items.FindAsync(id);
             return item == null ? NotFound() : PartialView("_EditItem", item);
         }
 
+        /// <summary>
+        /// Delete Item.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
         public async Task<IActionResult> DetailsPartial(int id)
         {
             var item = await _context.Items.FindAsync(id);
@@ -57,11 +86,20 @@ namespace ShoppingApp.Controllers
 
         }
 
+        /// <summary>
+        /// Get all items.
+        /// </summary>
+        /// <returns></returns>
         private async Task<List<Item>> GetItemData()
         {
             return await _context.Items.ToListAsync();
         }
 
+        /// <summary>
+        /// Remove item by Id.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
         [HttpDelete]
         public async Task<IActionResult> DeleteItem(int id)
         {
@@ -125,6 +163,11 @@ namespace ShoppingApp.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Check if item already exist.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private bool ItemExists(int id)
         {
             return _context.Items.Any(e => e.Id == id);

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Item>
+﻿@model IEnumerable<ItemViewModel>
 
 @if (Model.Count() == 0)
 {
@@ -9,14 +9,19 @@ else
     @foreach (var item in Model)
     {
         <div class="row m-2">
-            <input type="hidden" value=@item.Id/>
+            <input type="hidden" value=@item.Id />
             <div class="col">@item.ItemName</div>
             <div class="col">@item.Unit</div>
             <div class="col">$@item.UnitPrice</div>
+            <div class="col-2">
+                <input value="1" id="txt-@item.Id" type="number" min="1" oninput="this.value = !!this.value && Math.abs(this.value) > 0 ? Math.abs(this.value) : null" style="width: 50% !important;" placeholder="Add Quantity" />
+            </div>
             <div class="col-2">
                 <button onclick="AddItemToList(this)" id="btn-@item.Id" class="btn btn-outline-primary">Add</button>
             </div>
         </div>
     }
+
 }
+
 

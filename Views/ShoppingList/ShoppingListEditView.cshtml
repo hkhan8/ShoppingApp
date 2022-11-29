@@ -1,0 +1,66 @@
+﻿@model ShoppingApp.Models.ShoppingList
+
+@{
+    ViewData["Title"] = "Edit ShoppingList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>User</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditShoppingListDetails">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ShoppingListId" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group" style="margin-top:2%">
+                <input type="button" onclick="EditShoppingList()" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="ShoppingList">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}
+
+<script type="text/javascript">
+         async function EditShoppingList() {
+               let shoppingListId = $("#ShoppingListId").val();
+            let name = $("#Name").val();
+            var shoppingList= new Object();
+            shoppingList.Name= name;
+            shoppingList.ShoppingListId= shoppingListId;
+
+            $.ajax({
+        type: "PUT",
+        url: "@Url.Action("EditShoppingListDetails", "ShoppingList")",
+        dataType: "json",
+        data: shoppingList,
+        cache: false,
+        success: function(d) {
+                            window.location.href = '@Url.Content("~/ShoppingList/ShoppingList")';
+        },
+        error: function(xhr, textStatus, errorThrown) {
+            // TODO: Show error
+        }
+    });
+
+        }
+
+
+
+
+</script>
